@@ -28,12 +28,20 @@ const App = () => {
   };
 
   const restoreWallet = async () => {
-    const res = await RnBdk.restoreWallet();
+    const res = await RnBdk.restoreWallet(
+      'box limit letter buddy endorse crush pulp copy immune dynamic phrase initial',
+    );
+    _response(JSON.stringify(res.data));
+  };
+
+  const genSeed = async () => {
+    const res = await RnBdk.genSeed();
     _response(JSON.stringify(res.data));
   };
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Button title="Gen Seed" onPress={() => genSeed()} />
       <Button title="Create new wallet" onPress={() => createWallet()} />
       <Button title="Restore wallet" onPress={() => restoreWallet()} />
       <Button title="Get new address" onPress={() => getNewAddress()} />
