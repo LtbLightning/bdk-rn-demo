@@ -1,11 +1,11 @@
+import {useNavigation} from '@react-navigation/native';
 import React from 'react';
 import {AppColors} from '../styles/things';
 import Button from './Button';
 
 const Back = props => {
-  return (
-    <Button title="<-- Back" onPress={() => props.navigation.goBack()} style={{backgroundColor: AppColors.black}} />
-  );
+  const navigation = useNavigation();
+  return <Button title="<-- Back" onPress={() => navigation.goBack()} style={{backgroundColor: AppColors.black}} />;
 };
 
 export default Back;

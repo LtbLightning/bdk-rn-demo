@@ -23,7 +23,7 @@ const Receive = props => {
         Your wallet address
       </Text>
       <Text>{address}</Text>
-      <Back {...props} />
+      <Back />
     </Layout>
   );
 };

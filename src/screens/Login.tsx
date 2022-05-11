@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable curly */
 import React, {Fragment, useEffect, useState} from 'react';
-import {Modal, Pressable, StyleSheet, TextInput, View} from 'react-native';
+import {Alert, Modal, Pressable, StyleSheet, TextInput, View} from 'react-native';
 import {connect} from 'react-redux';
 import BdkRn from 'bdk-rn';
 
@@ -12,10 +14,7 @@ import MainNavigator from '../navigators/MainNavigator';
 import {createWallet, newWallet, unlockWallet} from '../store/actions';
 import {AppColors} from '../styles/things';
 
-// Don't delete it
-// title screen science betray fiber brother differ sniff page put damage slender
-
-const Login = props => {
+const Login = (props: any) => {
   const {walletExists, walletUnlocked, seed, createWallet, unlockWallet, newWallet} = props;
   const [seedModal, _seedModal] = useState(false);
   const [mnemonic, _mnemonic] = useState('');
@@ -26,18 +25,19 @@ const Login = props => {
       const exists = await BdkRn.walletExists();
       createWallet(exists.data);
     })();
-  }, []);
+  });
 
   const walletMethods = async (method: string = '', seed: string = '') => {
     try {
       _loading(true);
-      const res = await BdkRn[method](seed);
-      if (method === 'createWallet') {
-        newWallet(res.data.mnemonic);
-      } else {
-        createWallet(!res.error);
-        unlockWallet(!res.error);
-      }
+      const response = await BdkRn[method](seed);
+      if (response.error === false) {
+        if (method === 'createWallet') newWallet(response.data.mnemonic);
+        else {
+          createWallet(!response.error);
+          unlockWallet(!response.error);
+        }
+      } else Alert.alert('Error', response.data);
       _loading(false);
     } catch (err) {
       _loading(false);
