@@ -2,7 +2,7 @@ import React, {Fragment, useEffect, useState} from 'react';
 import {Button, Text, View} from 'react-native';
 import RnBdk from 'bdk-rn';
 
-const App = () => {
+const Test = () => {
   const [response, _response] = useState();
   const [walletExists, _walletExists] = useState(false);
   const [walletUnlocked, _walletUnlocked] = useState(false);
@@ -88,4 +88,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Test;

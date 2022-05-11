@@ -5,6 +5,8 @@ export const globalStyles = StyleSheet.create({
   layoutMainContainer: {
     flex: 1,
     justifyContent: 'center',
+    zIndex: 5,
+    backgroundColor: AppColors.white,
   },
   centerItems: {
     alignItems: 'center',

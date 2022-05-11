@@ -2,11 +2,10 @@ import {Image, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {AppColors} from '../styles/things';
 
-
 const Logo = () => {
   return (
     <View style={styles.backgroud}>
-      <Image source={require('assets/images/logo.png')} style={styles.image} resizeMode="cover" />
+      <Image source={require('./../assets/images/logo.png')} style={styles.image} resizeMode="cover" />
     </View>
   );
 };

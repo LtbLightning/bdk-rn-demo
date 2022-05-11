@@ -1,13 +1,14 @@
 import {StyleSheet, Text as BdkText, View} from 'react-native';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {AppColors, fontSizes} from '../styles/things';
+import {AppColors, fontFamily, fontSizes} from '../styles/things';
 
 export const Text = ({children, style, ...props}) => {
   const {heading, color} = props;
-  let internalStyle = {...styles.text, ...style};
+  let internalStyle = {...styles.text};
   internalStyle.color = color;
   if (heading) internalStyle.fontSize = fontSizes[heading];
+  internalStyle = {...internalStyle, ...style};
   return <BdkText style={internalStyle}>{children}</BdkText>;
 };
 
@@ -24,5 +25,8 @@ Text.defaultProps = {
 const styles = StyleSheet.create({
   text: {
     fontSize: fontSizes.h5,
+    marginVertical: 5,
+    fontFamily: fontFamily.regular,
+    textAlign: 'center',
   },
 });

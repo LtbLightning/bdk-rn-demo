@@ -13,3 +13,15 @@ export const fontSizes = {
   h5: 13.28,
   h6: 12,
 };
+
+export const fontFamily = {
+  black: 'Inter-Black',
+  bold: 'Inter-Bold',
+  extraBold: 'Inter-ExtraBold',
+  extraLight: 'Inter-ExtraLight',
+  light: 'Inter-Light',
+  medium: 'Inter-Medium',
+  regular: 'Inter-Regular',
+  semiBold: 'Inter-SemiBold',
+  thin: 'Inter-Thin',
+};
