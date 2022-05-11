@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {connect} from 'react-redux';
-import RnBdk from 'bdk-rn';
+import BdkRn from 'bdk-rn';
 
 import Button from '../elements/Button';
 import Loader from '../elements/Loader';
@@ -21,13 +21,13 @@ const Home = props => {
   });
 
   const syncWallet = async () => {
-    const res = await RnBdk.getBalance();
+    const res = await BdkRn.getBalance();
     _balance(res.data);
     _loading(false);
   };
 
   const resetApplication = async () => {
-    await RnBdk.resetWallet();
+    await BdkRn.resetWallet();
     resetWallet();
   };
 

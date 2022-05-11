@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Alert, StyleSheet, TextInput} from 'react-native';
-import RnBdk from 'bdk-rn';
+import BdkRn from 'bdk-rn';
 
 import Back from '../elements/Back';
 import Button from '../elements/Button';
@@ -15,7 +15,7 @@ const Send = props => {
 
   const sendIt = async () => {
     try {
-      await RnBdk.broadcastTx(address, parseInt(amount));
+      await BdkRn.broadcastTx(address, parseInt(amount));
       Alert.alert('Transaction broadcasted!!');
     } catch (err) {
       console.log('Something went wrong');

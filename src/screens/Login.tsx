@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Modal, Pressable, StyleSheet, TextInput, View} from 'react-native';
 import {connect} from 'react-redux';
-import RnBdk from 'bdk-rn';
+import BdkRn from 'bdk-rn';
 
 import Button from '../elements/Button';
 import Loader from '../elements/Loader';
@@ -23,7 +23,7 @@ const Login = props => {
 
   useEffect(() => {
     (async () => {
-      const exists = await RnBdk.walletExists();
+      const exists = await BdkRn.walletExists();
       createWallet(exists.data);
     })();
   }, []);
@@ -31,7 +31,7 @@ const Login = props => {
   const walletMethods = async (method: string = '', seed: string = '') => {
     try {
       _loading(true);
-      const res = await RnBdk[method](seed);
+      const res = await BdkRn[method](seed);
       if (method === 'createWallet') {
         newWallet(res.data.mnemonic);
       } else {
@@ -163,6 +163,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  modalInput: {width: 250, height: 100, borderWidth: 1, padding: 5, borderColor: AppColors.lightBlack},
+  modalInput: {width: 250, height: 75, borderWidth: 1, padding: 5, borderColor: AppColors.lightBlack},
   modalBtn: {backgroundColor: AppColors.orange, padding: 5, margin: 5, width: 150, borderRadius: 5},
 });

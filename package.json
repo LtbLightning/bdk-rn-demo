@@ -1,6 +1,6 @@
 {
   "name": "bdkdemo",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -16,14 +16,14 @@
     "@redux-devtools/extension": "^3.2.2",
     "@types/redux": "^3.6.0",
     "@types/redux-actions": "^2.6.2",
+    "bdk-rn": "file:./../bdk-rn",
     "react": "17.0.2",
     "react-native": "0.67.3",
     "react-native-safe-area-context": "^4.2.4",
     "react-native-screens": "^3.13.1",
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
-    "redux-actions": "^2.6.5",
-    "bdk-rn": "file:./../bdk-rn/"
+    "redux-actions": "^2.6.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

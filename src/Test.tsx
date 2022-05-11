@@ -1,6 +1,6 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import {Button, Text, View} from 'react-native';
-import RnBdk from 'bdk-rn';
+import BdkRn from 'bdk-rn';
 
 const Test = () => {
   const [response, _response] = useState();
@@ -12,7 +12,7 @@ const Test = () => {
 
   useEffect(() => {
     (async () => {
-      const exists = await RnBdk.walletExists();
+      const exists = await BdkRn.walletExists();
       _walletExists(exists.data);
     })();
   }, []);
@@ -20,22 +20,22 @@ const Test = () => {
   const setResponse = (res: any) => _response(JSON.stringify(res.data));
 
   const getNewAddress = async () => {
-    const res = await RnBdk.getNewAddress();
+    const res = await BdkRn.getNewAddress();
     setResponse(res);
   };
 
   const getBalance = async () => {
-    const res = await RnBdk.getBalance();
+    const res = await BdkRn.getBalance();
     setResponse(res);
   };
 
   const broadcastTx = async () => {
-    const res = await RnBdk.broadcastTx('tb1ql7w62elx9ucw4pj5lgw4l028hmuw80sndtntxt', 600);
+    const res = await BdkRn.broadcastTx('tb1ql7w62elx9ucw4pj5lgw4l028hmuw80sndtntxt', 600);
     setResponse(res);
   };
 
   const createWallet = async () => {
-    const res = await RnBdk.createWallet();
+    const res = await BdkRn.createWallet();
     setResponse(res);
 
     _walletUnlocked(!res.error);
@@ -43,19 +43,19 @@ const Test = () => {
   };
 
   const restoreWallet = async () => {
-    const res = await RnBdk.restoreWallet(mnemonic);
+    const res = await BdkRn.restoreWallet(mnemonic);
     setResponse(res);
     _walletUnlocked(!res.error);
     _walletExists(!res.error);
   };
 
   const genSeed = async () => {
-    const res = await RnBdk.genSeed();
+    const res = await BdkRn.genSeed();
     setResponse(res);
   };
 
   const unlockWallet = async () => {
-    const res = await RnBdk.unlockWallet();
+    const res = await BdkRn.unlockWallet();
     setResponse(res);
     _walletUnlocked(!res.error);
   };

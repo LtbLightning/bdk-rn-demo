@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {StyleSheet} from 'react-native';
-import RnBdk from 'bdk-rn';
+import BdkRn from 'bdk-rn';
 
 import Back from '../elements/Back';
 import Logo from '../elements/Logo';
@@ -12,7 +12,7 @@ const Receive = props => {
   const [address, _address] = useState('');
   useEffect(() => {
     (async () => {
-      let res = await RnBdk.getNewAddress();
+      let res = await BdkRn.getNewAddress();
       _address(res.data);
     })();
   }, []);
