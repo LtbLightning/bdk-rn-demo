@@ -1,1 +1,3 @@
-# Genesis 1:3 bdk-rn-app
+# BdkDemo
+
+react-native demo application for bdk-rn
