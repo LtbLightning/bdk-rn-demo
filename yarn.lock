@@ -6198,6 +6198,13 @@ rimraf@~2.6.2:
     is_js "^0.9.0"
     request "^2.88.2"
 
+"bdk-rn@file:./../bdk-rn/":
+  version "1.0.0"
+  dependencies:
+    adm-zip "^0.5.9"
+    is_js "^0.9.0"
+    request "^2.88.2"
+
 rsvp@^4.8.4:
   version "4.8.5"
   resolved "https://registry.yarnpkg.com/rsvp/-/rsvp-4.8.5.tgz#c8f155311d167f68f21e168df71ec5b083113734"

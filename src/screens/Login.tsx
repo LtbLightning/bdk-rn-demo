@@ -51,7 +51,6 @@ const Login = props => {
 
   return (
     <Fragment>
-      {loading && <Loader />}
       {(!walletExists || !walletUnlocked) && (
         <Fragment>
           <Layout>
@@ -60,7 +59,7 @@ const Login = props => {
             {seed != '' ? (
               <Fragment>
                 <Text heading="h3" color={AppColors.orange}>
-                  Your recovery phrase:{' '}
+                  Your recovery phrase:
                 </Text>
                 <Text>{seed}</Text>
                 <Button title="Goto wallet -->" onPress={() => gotoWallet()} />
@@ -105,7 +104,13 @@ const Login = props => {
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
                 <Text>Enter your seed phrase!!</Text>
-                <TextInput style={styles.modalInput} multiline value={mnemonic} onChangeText={_mnemonic} />
+                <TextInput
+                  style={styles.modalInput}
+                  multiline
+                  value={mnemonic}
+                  onChangeText={_mnemonic}
+                  textAlignVertical="top"
+                />
                 <Pressable
                   style={styles.modalBtn}
                   onPress={() => {
@@ -122,6 +127,7 @@ const Login = props => {
               </View>
             </View>
           </Modal>
+          {loading && <Loader />}
         </Fragment>
       )}
 
