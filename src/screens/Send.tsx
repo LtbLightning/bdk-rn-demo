@@ -1,13 +1,41 @@
-import React from 'react';
-import {StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {Alert, StyleSheet, TextInput} from 'react-native';
+import RnBdk from 'bdk-rn';
+
+import Back from '../elements/Back';
+import Button from '../elements/Button';
+import Logo from '../elements/Logo';
 import {Text} from '../elements/Text';
-
 import Layout from '../Layout';
+import {globalStyles} from '../styles/styles';
 
-const Send = () => {
+const Send = props => {
+  const [address, _address] = useState('');
+  const [amount, _amount] = useState('');
+
+  const sendIt = async () => {
+    try {
+      await RnBdk.broadcastTx(address, parseInt(amount));
+      Alert.alert('Transaction broadcasted!!');
+    } catch (err) {
+      console.log('Something went wrong');
+    }
+  };
+
   return (
     <Layout>
-      <Text>Send</Text>
+      <Logo />
+      <Text heading="h3">Send to Testnet Address</Text>
+      <TextInput placeholder="Recepient Address" style={globalStyles.input} value={address} onChangeText={_address} />
+      <TextInput
+        placeholder="Amount(Sats)"
+        style={globalStyles.input}
+        keyboardType="decimal-pad"
+        value={amount}
+        onChangeText={_amount}
+      />
+      <Button title="Broadcast" onPress={() => sendIt()} />
+      <Back {...props} />
     </Layout>
   );
 };

@@ -1,5 +1,6 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Modal, Pressable, StyleSheet, TextInput, View} from 'react-native';
+import {connect} from 'react-redux';
 import RnBdk from 'bdk-rn';
 
 import Button from '../elements/Button';
@@ -8,52 +9,44 @@ import Logo from '../elements/Logo';
 import {Text} from '../elements/Text';
 import Layout from '../Layout';
 import MainNavigator from '../navigators/MainNavigator';
+import {createWallet, newWallet, unlockWallet} from '../store/actions';
 import {AppColors} from '../styles/things';
 
-const Login = () => {
-  const [response, _response] = useState();
-  const [walletExists, _walletExists] = useState(false);
-  const [walletUnlocked, _walletUnlocked] = useState(false);
-  const [mnemonic, _mnemonic] = useState(
-    'title screen science betray fiber brother differ sniff page put damage slender',
-  );
+// Don't delete it
+// title screen science betray fiber brother differ sniff page put damage slender
 
-  const [newWalletSeed, _newWalletSeed] = useState('');
-
+const Login = props => {
+  const {walletExists, walletUnlocked, seed, createWallet, unlockWallet, newWallet} = props;
+  const [seedModal, _seedModal] = useState(false);
+  const [mnemonic, _mnemonic] = useState('');
   const [loading, _loading] = useState(false);
 
   useEffect(() => {
     (async () => {
       const exists = await RnBdk.walletExists();
-      _walletExists(exists.data);
+      createWallet(exists.data);
     })();
   }, []);
 
-  const logout = () => {
-    _walletUnlocked(false);
-  };
-
-  const walletMethods = async (method: string = '') => {
+  const walletMethods = async (method: string = '', seed: string = '') => {
     try {
       _loading(true);
-      const res = await RnBdk[method](mnemonic);
-      _response(JSON.stringify(res.data));
-      if (method == 'createWallet') {
-        _newWalletSeed(res.data.mnemonic);
+      const res = await RnBdk[method](seed);
+      if (method === 'createWallet') {
+        newWallet(res.data.mnemonic);
       } else {
-        _walletUnlocked(!res.error);
-        _walletExists(!res.error);
+        createWallet(!res.error);
+        unlockWallet(!res.error);
       }
       _loading(false);
     } catch (err) {
-      console.log(err);
       _loading(false);
     }
   };
 
   const gotoWallet = () => {
-    _walletUnlocked(true);
-    _walletExists(true);
+    createWallet(true);
+    unlockWallet(true);
   };
 
   return (
@@ -64,11 +57,13 @@ const Login = () => {
           <Layout>
             <Logo />
             <Text heading="h1">Bitcoin Wallet</Text>
-            {newWalletSeed != '' ? (
+            {seed != '' ? (
               <Fragment>
-                <Text heading="h3">Wallet created: </Text>
-                <Text>{newWalletSeed}</Text>
-                <Button title="Go to wallet!!" onPress={() => gotoWallet()} />
+                <Text heading="h3" color={AppColors.orange}>
+                  Your recovery phrase:{' '}
+                </Text>
+                <Text>{seed}</Text>
+                <Button title="Goto wallet -->" onPress={() => gotoWallet()} />
               </Fragment>
             ) : (
               <Fragment>
@@ -78,7 +73,7 @@ const Login = () => {
                       A bitcoin wallet built with bdk-rn, a Bitcoin Development Kit for building React Native Apps
                     </Text>
                     <Button title="Create new wallet" onPress={() => walletMethods('createWallet')} />
-                    <Pressable onPress={() => walletMethods('restoreWallet')}>
+                    <Pressable onPress={() => _seedModal(true)}>
                       <Text heading="h3" color={AppColors.orange}>
                         Restore existing wallet
                       </Text>
@@ -100,6 +95,33 @@ const Login = () => {
           <View style={styles.bottomContainer}>
             <Text style={styles.bottomText}>Your wallet, your coins {'\n'} 100% open-source & open-design</Text>
           </View>
+
+          <Modal
+            transparent={true}
+            visible={seedModal}
+            onRequestClose={() => {
+              _seedModal(false);
+            }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+                <Text>Enter your seed phrase!!</Text>
+                <TextInput style={styles.modalInput} multiline value={mnemonic} onChangeText={_mnemonic} />
+                <Pressable
+                  style={styles.modalBtn}
+                  onPress={() => {
+                    _seedModal(false);
+                    walletMethods('restoreWallet', mnemonic);
+                  }}>
+                  <Text color={AppColors.white}>Restore</Text>
+                </Pressable>
+                <Pressable
+                  style={{...styles.modalBtn, backgroundColor: AppColors.black}}
+                  onPress={() => _seedModal(false)}>
+                  <Text color={AppColors.white}>Cancel</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
         </Fragment>
       )}
 
@@ -108,9 +130,33 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default connect((state: any) => ({...state.reducer}), {unlockWallet, createWallet, newWallet})(Login);
 
 const styles = StyleSheet.create({
   bottomContainer: {marginVertical: 50, alignItems: 'center'},
   bottomText: {textAlign: 'center', color: AppColors.lightBlack},
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalInput: {width: 250, height: 100, borderWidth: 1, padding: 5, borderColor: AppColors.lightBlack},
+  modalBtn: {backgroundColor: AppColors.orange, padding: 5, margin: 5, width: 150, borderRadius: 5},
 });

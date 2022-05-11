@@ -9,7 +9,11 @@ export const Text = ({children, style, ...props}) => {
   internalStyle.color = color;
   if (heading) internalStyle.fontSize = fontSizes[heading];
   internalStyle = {...internalStyle, ...style};
-  return <BdkText style={internalStyle}>{children}</BdkText>;
+  return (
+    <BdkText style={internalStyle} selectable>
+      {children}
+    </BdkText>
+  );
 };
 
 Text.propTypes = {
