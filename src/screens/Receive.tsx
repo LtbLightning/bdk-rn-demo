@@ -1,16 +1,15 @@
-import {StyleSheet} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import Layout from '../Layout';
-import {Text} from '../elements/Text';
-
+import {StyleSheet} from 'react-native';
 import RnBdk from 'bdk-rn';
-import {AppColors, fontFamily} from '../styles/things';
-import Logo from '../elements/Logo';
-import Button from '../elements/Button';
+
 import Back from '../elements/Back';
+import Logo from '../elements/Logo';
+import {Text} from '../elements/Text';
+import Layout from '../Layout';
+import {AppColors, fontFamily} from '../styles/things';
 
 const Receive = props => {
-  const [address, _address] = useState('NEW test address');
+  const [address, _address] = useState('');
   useEffect(() => {
     (async () => {
       let res = await RnBdk.getNewAddress();
@@ -30,5 +29,3 @@ const Receive = props => {
 };
 
 export default Receive;
-
-const styles = StyleSheet.create({});
