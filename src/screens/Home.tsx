@@ -14,7 +14,6 @@ const Home = props => {
   const {navigation, unlockWallet, resetWallet, logout} = props;
   const [loading, _loading] = useState(true);
   const [balance, _balance] = useState(0);
-  const [address, _address] = useState('');
 
   useEffect(() => {
     (async () => await syncWallet())();
@@ -48,7 +47,11 @@ const Home = props => {
           <Button style={styles.btn} title="Logout" onPress={() => logout()} />
           <Button style={styles.btn} title="Reset App" onPress={() => resetApplication()} />
         </View>
-        <Text>{address}</Text>
+
+        <View style={styles.btnContainer}>
+          <Button style={styles.btn} title="Pending Tx" onPress={() => navigation.navigate('Pending')} />
+          <Button style={styles.btn} title="Confirmed Tx" onPress={() => navigation.navigate('Confirmed')} />
+        </View>
       </Layout>
       {loading && <Loader />}
     </Fragment>
