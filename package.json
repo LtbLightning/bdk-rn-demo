@@ -1,5 +1,5 @@
 {
-  "name": "bdkdemo",
+  "name": "bdk-rn-app",
   "version": "0.0.15",
   "private": false,
   "scripts": {
@@ -14,6 +14,7 @@
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.2",
     "@redux-devtools/extension": "^3.2.2",
+    "@reduxjs/toolkit": "^1.9.1",
     "@types/redux": "^3.6.0",
     "@types/redux-actions": "^2.6.2",
     "bdk-rn": "file:./../bdk-rn",

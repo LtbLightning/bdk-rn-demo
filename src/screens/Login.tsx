@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable curly */
-import BdkRn from 'bdk-rn';
-import React, {Fragment, useEffect, useState} from 'react';
+import {BdkRn, Mnemonic} from 'bdk-rn';
+import React, {Fragment, useState} from 'react';
 import {Alert, Modal, Pressable, StyleSheet, TextInput, View} from 'react-native';
-import {connect, useDispatch} from 'react-redux';
+import {connect} from 'react-redux';
 
 import Button from '../elements/Button';
 import Loader from '../elements/Loader';
@@ -53,7 +53,7 @@ const Login = (props: any) => {
   const genMnemonic = async () => {
     try {
       _loading(true);
-      let seed = await BdkRn.generateMnemonic({length: 24});
+      let seed = await Mnemonic.create();
       _responseText(seed.value);
       _loading(false);
     } catch (err) {

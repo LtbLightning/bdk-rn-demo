@@ -502,7 +502,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  bdk-rn: 8e9b331ee96078d81ad8a1354d1dc9e393ded30d
+  bdk-rn: 9efbf46b7a422f022868fdb7d70216d9889c466b
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662

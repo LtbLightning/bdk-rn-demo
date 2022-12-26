@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {Alert, StyleSheet, TextInput, View} from 'react-native';
 import Button from '../elements/Button';
 import {Text} from '../elements/Text';
@@ -7,7 +7,6 @@ import Layout from '../Layout';
 import {RadioButtonProps, RadioGroup} from 'react-native-radio-buttons-group';
 import {CreateDescriptorRequest} from 'bdk-rn/lib/lib/interfaces';
 import BdkRn from 'bdk-rn';
-import Back from '../elements/Back';
 import {AppColors} from '../styles/things';
 
 const Descriptors = ({back}) => {
