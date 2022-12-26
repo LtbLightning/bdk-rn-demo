@@ -11,8 +11,8 @@ const Pending = props => {
   const [list, _list] = useState('');
   useEffect(() => {
     (async () => {
-      let res = await BdkRn.genPendingTransactions();
-      _list(JSON.stringify(res.data));
+      let res = await BdkRn.getPendingTransactions();
+      _list(JSON.stringify(res.value));
     })();
   }, []);
   return (

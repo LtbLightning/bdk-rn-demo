@@ -11,12 +11,12 @@ import {globalStyles} from '../styles/styles';
 
 const Send = props => {
   const [address, _address] = useState('');
-  const [amount, _amount] = useState();
+  const [amount, _amount] = useState('');
 
   const sendIt = async () => {
     try {
-      const response = await BdkRn.broadcastTx(address, parseInt(amount));
-      Alert.alert(response.error ? 'Error' : 'Transaction broadcasted', response.data);
+      const response = await BdkRn.broadcastTx({address: address, amount: parseInt(amount)});
+      Alert.alert(response.error != undefined ? 'Error' : 'Transaction broadcasted', response.value);
     } catch (err) {
       console.log('Something went wrong');
     }
@@ -32,7 +32,7 @@ const Send = props => {
         style={globalStyles.input}
         keyboardType="decimal-pad"
         value={amount}
-        onChangeText={_amount}
+        onChangeText={e => _amount(e)}
       />
       <Button title="Broadcast" onPress={() => sendIt()} />
       <Back />

@@ -12,7 +12,7 @@ const Receive = props => {
   useEffect(() => {
     (async () => {
       let res = await BdkRn.getNewAddress();
-      _address(res.data);
+      _address(res.value);
     })();
   }, []);
   return (
