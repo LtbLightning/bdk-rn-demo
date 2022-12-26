@@ -15,7 +15,7 @@ const Descriptors = ({back}) => {
   const [password, _password] = useState('');
 
   const [useMnemonic, _useMnemonic] = useState(false);
-  const [type, _type] = useState<any>('MULTI');
+  const [type, _type] = useState<any>('');
   const [response, _response] = useState<any>('');
   const publicKeys = ['KEY1', 'KEY2', 'KEY3'];
 
@@ -47,19 +47,18 @@ const Descriptors = ({back}) => {
   const createDesc = async () => {
     const args: CreateDescriptorRequest = {
       type: type,
-      useMnemonic: useMnemonic,
       mnemonic: seed,
       password: password,
       path: '',
       network: 'testnet',
       publicKeys: publicKeys,
-      thresold: 4,
+      threshold: 4,
       // xprv: seed,
     };
     try {
       const apiResponse = await BdkRn.createDescriptor(args);
       if (apiResponse.isOk()) _response(apiResponse.value);
-      else Alert.alert('Error', response.error.message);
+      else Alert.alert('Error', apiResponse.error.message);
     } catch (err) {
       console.log(err);
     }

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable curly */
+import BdkRn from 'bdk-rn';
 import React, {Fragment, useEffect, useState} from 'react';
 import {Alert, Modal, Pressable, StyleSheet, TextInput, View} from 'react-native';
-import {connect} from 'react-redux';
-import BdkRn from 'bdk-rn';
+import {connect, useDispatch} from 'react-redux';
 
 import Button from '../elements/Button';
 import Loader from '../elements/Loader';
@@ -11,27 +11,20 @@ import Logo from '../elements/Logo';
 import {Text} from '../elements/Text';
 import Layout from '../Layout';
 import MainNavigator from '../navigators/MainNavigator';
-import {createWallet, genSeed, unlockWallet} from '../store/actions';
+import {createWallet, unlockWallet} from '../store/actions';
 import {AppColors} from '../styles/things';
-import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Descriptors from './Descriptors';
-import SecondNavigator from '../navigators/SecondNavigator';
-import {useSelector, useDispatch} from 'react-redux';
+
 let defaultSeedString = 'cream ecology sniff amazing awful ocean gaze can peanut abandon emotion affair';
-defaultSeedString =
-  'bracket agent ozone ridge invest eagle taxi goat method ship debate fantasy mom assume crawl paddle index auction theory double spice walk hurry jungle';
 
 const Login = (props: any) => {
-  const {walletExists, walletUnlocked, createWallet, unlockWallet, seed_phrase} = props;
+  const {walletExists, walletUnlocked, createWallet, unlockWallet} = props;
   const [seedModal, _seedModal] = useState(false);
   const [descriptorScreen, _descriptorScreen] = useState(false);
   const [isWalletModal, _isWalletModal] = useState(true);
-  const [isDescriptor, _isDescriptor] = useState(false);
   const [mnemonic, _mnemonic] = useState(defaultSeedString);
   const [responseText, _responseText] = useState('');
   const [loading, _loading] = useState(false);
-
-  const dispatch = useDispatch();
 
   const initWallet = async () => {
     try {
@@ -46,7 +39,6 @@ const Login = (props: any) => {
         timeOut: '',
         blockChainName: '',
         // descriptor: mnemonic,
-        useDescriptor: isDescriptor,
       });
       if (response.isOk()) {
         createWallet(true);
@@ -107,7 +99,6 @@ const Login = (props: any) => {
                       <Button title="Initialize wallet" onPress={() => openModal()} />
                       <Button title="Extendend KeyInfo" onPress={() => openModal(false)} />
                       <Text>{responseText}</Text>
-                      {/* <Text>Seed Phrase: { seed_phrase }</Text> */}
                       <Fragment>
                         <Pressable onPress={() => _descriptorScreen(true)}>
                           <Text heading="h3" color={AppColors.orange}>
@@ -115,8 +106,6 @@ const Login = (props: any) => {
                           </Text>
                         </Pressable>
                       </Fragment>
-
-                      {/* <Button title="Test seed" onPress={() => dispatch(genSeed())} /> */}
                     </Fragment>
                   )}
                 </Fragment>
@@ -133,13 +122,13 @@ const Login = (props: any) => {
                 }}>
                 <View style={styles.centeredView}>
                   <View style={styles.modalView}>
-                    <Text>Enter your seed phrase!!</Text>
-                    {isWalletModal && (
+                    <Text>{isWalletModal ? 'Enter your seed OR descriptor!!' : 'Enter your seed phrase!!'}</Text>
+                    {/* {isWalletModal && (
                       <View style={{flexDirection: 'row', marginVertical: 5}}>
                         <BouncyCheckbox isChecked={isDescriptor} onPress={newValue => _isDescriptor(newValue)} />
                         <Text>Init with descriptor ?</Text>
                       </View>
-                    )}
+                    )} */}
                     <TextInput
                       style={styles.modalInput}
                       multiline

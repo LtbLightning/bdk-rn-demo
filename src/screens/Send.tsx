@@ -16,7 +16,9 @@ const Send = props => {
   const sendIt = async () => {
     try {
       const response = await BdkRn.broadcastTx({address: address, amount: parseInt(amount)});
-      Alert.alert(response.error != undefined ? 'Error' : 'Transaction broadcasted', response.value);
+      if (response.error != undefined) {
+        Alert.alert('Error', response.error.toString());
+      } else Alert.alert('Transaction broadcasted', response.value);
     } catch (err) {
       console.log('Something went wrong');
     }
