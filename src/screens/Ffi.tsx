@@ -1,5 +1,6 @@
-import {DescriptorSecretKey, Mnemonic, DescriptorPublicKey, DerivationPath} from 'bdk-rn';
-import {Network} from 'bdk-rn/src/lib/enums';
+import {DescriptorSecretKey, Mnemonic, DescriptorPublicKey, DerivationPath, Blockchain} from 'bdk-rn';
+import {BlockChainNames, EntropyLength} from 'bdk-rn/lib/lib/enums';
+import {BlockchainElectrumConfig, Network} from 'bdk-rn/src/lib/enums';
 import React, {useState} from 'react';
 import {SafeAreaView, View} from 'react-native';
 
@@ -20,6 +21,9 @@ const Ffi = () => {
       _response(fromWordCount.asString());
       _seed(fromWordCount.asString());
       _loading(false);
+
+      const fromEntropy = await Mnemonic.fromEntropy(EntropyLength.Length16);
+      _response(fromEntropy.asString());
     } catch (err) {
       console.log('ERRO', err);
       _loading(false);
@@ -63,6 +67,34 @@ const Ffi = () => {
     }
   };
 
+  const blockchainConfig = async () => {
+    try {
+      _loading(true);
+      let config: BlockchainElectrumConfig = {
+        url: 'ssl://electrum.blockstream.info:60002',
+        retry: '5',
+        timeout: '5',
+        stopGap: '5',
+      };
+
+      // let config: BlockchainEsploraConfig = {
+      //   url: 'http://localhost:5000/',
+      //   proxy: '',
+      //   concurrency: '5',
+      //   stopGap: '5',
+      //   timeout: '5',
+      // };
+      const blockchain = await Blockchain.create(config, BlockChainNames.Electrum);
+      const height = await blockchain.getHeight();
+      const hash = await blockchain.getBlockHash(height);
+      _response(`Height: ${height},\n Hash: ${hash}`);
+      _loading(false);
+    } catch (e) {
+      console.log('Blockchain error', e);
+      _loading(false);
+    }
+  };
+
   return (
     <SafeAreaView>
       <View style={{alignItems: 'center', justifyContent: 'center'}}>
@@ -70,6 +102,7 @@ const Ffi = () => {
         <Button title="Gen Mnemonic" onPress={() => genSeed()} />
         <Button title="Descriptor Secret key" onPress={descriptorSecret} />
         <Button title="Descriptor Public key" onPress={descriptorPublic} />
+        <Button title="Blockchain config" onPress={blockchainConfig} />
         <Text>{response}</Text>
       </View>
     </SafeAreaView>
