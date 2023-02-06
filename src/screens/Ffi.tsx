@@ -7,6 +7,8 @@ import {
   Blockchain,
   Wallet,
   DatabaseConfig,
+  Address,
+  TxBuilder,
 } from 'bdk-rn';
 import {BlockChainNames} from 'bdk-rn/lib/lib/enums';
 import {BlockchainElectrumConfig, Network} from 'bdk-rn/src/lib/enums';
@@ -133,7 +135,7 @@ const Ffi = () => {
     try {
       _loading(true);
       let wpkh1 = `wpkh(${xprvWallet})`;
-      setWallet(await walletInstance.init(wpkh1, Network.Testnet));
+      setWallet(await walletInstance.create(wpkh1, Network.Testnet));
       _loading(false);
     } catch (e) {
       console.log('Blockchain error', e);
@@ -145,7 +147,7 @@ const Ffi = () => {
     try {
       _loading(true);
       let wpkh1 = `wpkh(${xprvWallet1})`;
-      setWallet1(await walletInstance1.init(wpkh1, Network.Testnet));
+      setWallet1(await walletInstance1.create(wpkh1, Network.Testnet));
       _loading(false);
     } catch (e) {
       console.log('Blockchain error', e);
@@ -170,7 +172,7 @@ const Ffi = () => {
     _loading(false);
   };
 
-  const address = async (one = true) => {
+  const getAddress = async (one = true) => {
     _loading(true);
     if (one) {
       console.log(await wallet?.getAddress());
@@ -200,6 +202,15 @@ const Ffi = () => {
     _loading(false);
   };
 
+  const sendBit = async () => {
+    let address = await new Address().create('tb1q8aqu8a9gks05prmqk209rk88xffcdjcg9dyzn0');
+    let script = await address.scriptPubKey();
+    let txBuilder = await new TxBuilder().create();
+    await txBuilder.addRecipient(script, 7000);
+    let details = txBuilder.finish(wallet);
+    console.log(address, script.id);
+  };
+
   return (
     <SafeAreaView>
       <View style={{alignItems: 'center', justifyContent: 'center'}}>
@@ -213,11 +224,12 @@ const Ffi = () => {
             <Fragment>
               <Button transparent title="Sync" onPress={() => sync()} />
               <Button transparent title="Balance" onPress={() => balance()} />
-              <Button transparent title="Address" onPress={() => address()} />
+              <Button transparent title="Address" onPress={() => getAddress()} />
               <Button transparent title="List unspents" onPress={() => unspents()} />
               <Button transparent title="List transactions" onPress={() => transactions()} />
             </Fragment>
           )}
+          <Button transparent title="Send" onPress={() => sendBit()} />
           <Text>{response}</Text>
         </View>
 
@@ -228,7 +240,7 @@ const Ffi = () => {
             <Fragment>
               <Button transparent title="Sync" onPress={() => sync(false)} />
               <Button transparent title="Balance" onPress={() => balance(false)} />
-              <Button transparent title="Address" onPress={() => address(false)} />
+              <Button transparent title="Address" onPress={() => getAddress(false)} />
               <Button transparent title="List unspents" onPress={() => unspents(false)} />
               <Button transparent title="List transactions" onPress={() => transactions(false)} />
             </Fragment>
