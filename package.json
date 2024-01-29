@@ -1,10 +1,10 @@
 {
   "name": "bdkdemo",
-  "version": "0.0.15",
-  "private": false,
+  "version": "0.2.0",
+  "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios --simulator \"iPhone 13\"",
+    "ios": "react-native run-ios --simulator \"iPhone SE (3rd generation)\"",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
@@ -14,16 +14,20 @@
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.2",
     "@redux-devtools/extension": "^3.2.2",
+    "@reduxjs/toolkit": "^1.9.1",
     "@types/redux": "^3.6.0",
     "@types/redux-actions": "^2.6.2",
     "bdk-rn": "file:./../bdk-rn",
     "react": "17.0.2",
     "react-native": "0.67.3",
+    "react-native-bouncy-checkbox": "^2.1.10",
+    "react-native-radio-buttons-group": "^2.2.11",
     "react-native-safe-area-context": "^4.2.4",
     "react-native-screens": "^3.13.1",
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
-    "redux-actions": "^2.6.5"
+    "redux-actions": "^2.6.5",
+    "redux-thunk": "^2.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

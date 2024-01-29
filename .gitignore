@@ -36,10 +36,6 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
-# Misc
-.com.greenworldsoft.syncfolderspro
-_DelSyncFiles/*
-
 # BUCK
 buck-out/
 \.buckd/

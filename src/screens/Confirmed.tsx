@@ -13,7 +13,7 @@ const Confirmed = props => {
   useEffect(() => {
     (async () => {
       let res = await BdkRn.getConfirmedTransactions();
-      _list(JSON.stringify(res.data));
+      _list(JSON.stringify(res.value));
     })();
   }, []);
   return (

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable curly */
-import React, {Fragment, useEffect, useState} from 'react';
+import {BdkRn, Mnemonic} from 'bdk-rn';
+import React, {Fragment, useState} from 'react';
 import {Alert, Modal, Pressable, StyleSheet, TextInput, View} from 'react-native';
 import {connect} from 'react-redux';
-import BdkRn from 'bdk-rn';
 
 import Button from '../elements/Button';
 import Loader from '../elements/Loader';
@@ -11,134 +11,163 @@ import Logo from '../elements/Logo';
 import {Text} from '../elements/Text';
 import Layout from '../Layout';
 import MainNavigator from '../navigators/MainNavigator';
-import {createWallet, newWallet, unlockWallet} from '../store/actions';
+import {createWallet, unlockWallet} from '../store/actions';
 import {AppColors} from '../styles/things';
+import Descriptors from './Descriptors';
+
+let defaultSeedString = 'cream ecology sniff amazing awful ocean gaze can peanut abandon emotion affair';
 
 const Login = (props: any) => {
-  const {walletExists, walletUnlocked, seed, createWallet, unlockWallet, newWallet} = props;
+  const {walletExists, walletUnlocked, createWallet, unlockWallet} = props;
   const [seedModal, _seedModal] = useState(false);
-  const [mnemonic, _mnemonic] = useState('');
+  const [descriptorScreen, _descriptorScreen] = useState(false);
+  const [isWalletModal, _isWalletModal] = useState(true);
+  const [mnemonic, _mnemonic] = useState(defaultSeedString);
+  const [responseText, _responseText] = useState('');
   const [loading, _loading] = useState(false);
 
-  useEffect(() => {
-    (async () => {
-      const exists = await BdkRn.walletExists();
-      createWallet(exists.data);
-    })();
-  });
-
-  const walletMethods = async (method: string = '', seed: string = '') => {
+  const initWallet = async () => {
     try {
       _loading(true);
-      const response = await BdkRn[method](seed);
-      if (response.error === false) {
-        if (method === 'createWallet') newWallet(response.data.mnemonic);
-        else {
-          createWallet(!response.error);
-          unlockWallet(!response.error);
-        }
-      } else Alert.alert('Error', response.data);
+      const response = await BdkRn.createWallet({
+        mnemonic,
+        password: '',
+        network: 'testnet',
+        blockChainConfigUrl: '',
+        blockChainSocket5: '',
+        retry: '',
+        timeOut: '',
+        blockChainName: '',
+        // descriptor: mnemonic,
+      });
+      if (response.isOk()) {
+        createWallet(true);
+        unlockWallet(true);
+      } else Alert.alert('Error', response.error.toString());
       _loading(false);
     } catch (err) {
       _loading(false);
     }
   };
 
-  const gotoWallet = () => {
-    createWallet(true);
-    unlockWallet(true);
+  const genMnemonic = async () => {
+    try {
+      _loading(true);
+      let seed = await Mnemonic.create();
+      _responseText(seed.value);
+      _loading(false);
+    } catch (err) {
+      _loading(false);
+    }
+  };
+
+  const getXprv = async () => {
+    try {
+      _seedModal(false);
+      _loading(true);
+      let res = await BdkRn.createExtendedKey({network: 'testnet', mnemonic, password: ''});
+      _responseText(JSON.stringify(res.value));
+      _loading(false);
+    } catch (err) {
+      _loading(false);
+    }
+  };
+
+  const openModal = (wallet = true) => {
+    _seedModal(true);
+    _isWalletModal(wallet);
   };
 
   return (
     <Fragment>
-      {(!walletExists || !walletUnlocked) && (
+      {descriptorScreen ? (
+        <Descriptors back={() => _descriptorScreen(false)} />
+      ) : (
         <Fragment>
-          <Layout>
-            <Logo />
-            <Text heading="h1">Bitcoin Wallet</Text>
-            {seed != '' ? (
-              <Fragment>
-                <Text heading="h3" color={AppColors.orange}>
-                  Your recovery phrase:
-                </Text>
-                <Text>{seed}</Text>
-                <Button title="Goto wallet -->" onPress={() => gotoWallet()} />
-              </Fragment>
-            ) : (
-              <Fragment>
-                {!walletExists && !walletUnlocked && (
-                  <Fragment>
-                    <Text heading="h3" color={AppColors.lightBlack}>
-                      A bitcoin wallet built with bdk-rn, a Bitcoin Development Kit for building React Native Apps
-                    </Text>
-                    <Button title="Create new wallet" onPress={() => walletMethods('createWallet')} />
-                    <Pressable onPress={() => _seedModal(true)}>
-                      <Text heading="h3" color={AppColors.orange}>
-                        Restore existing wallet
+          {(!walletExists || !walletUnlocked) && (
+            <Fragment>
+              <Layout>
+                <Logo />
+                <Text heading="h1">Bitcoin Wallet</Text>
+                <Fragment>
+                  {!walletExists && !walletUnlocked && (
+                    <Fragment>
+                      <Text heading="h3" color={AppColors.lightBlack}>
+                        A bitcoin wallet built with bdk-rn, a Bitcoin Development Kit for building React Native Apps
                       </Text>
-                    </Pressable>
-                  </Fragment>
-                )}
-
-                {walletExists && !walletUnlocked && (
-                  <Fragment>
-                    <Text heading="h3" color={AppColors.lightBlack}>
-                      Welcome back!
-                    </Text>
-                    <Button title="Unlock Wallet!" onPress={() => walletMethods('unlockWallet')} />
-                  </Fragment>
-                )}
-              </Fragment>
-            )}
-          </Layout>
-          <View style={styles.bottomContainer}>
-            <Text style={styles.bottomText}>Your wallet, your coins {'\n'} 100% open-source & open-design</Text>
-          </View>
-
-          <Modal
-            transparent={true}
-            visible={seedModal}
-            onRequestClose={() => {
-              _seedModal(false);
-            }}>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <Text>Enter your seed phrase!!</Text>
-                <TextInput
-                  style={styles.modalInput}
-                  multiline
-                  value={mnemonic}
-                  onChangeText={_mnemonic}
-                  textAlignVertical="top"
-                />
-                <Pressable
-                  style={styles.modalBtn}
-                  onPress={() => {
-                    _seedModal(false);
-                    walletMethods('restoreWallet', mnemonic);
-                  }}>
-                  <Text color={AppColors.white}>Restore</Text>
-                </Pressable>
-                <Pressable
-                  style={{...styles.modalBtn, backgroundColor: AppColors.black}}
-                  onPress={() => _seedModal(false)}>
-                  <Text color={AppColors.white}>Cancel</Text>
-                </Pressable>
+                      <Button title="Gen Mnemonic" onPress={() => genMnemonic()} />
+                      <Button title="Initialize wallet" onPress={() => openModal()} />
+                      <Button title="Extendend KeyInfo" onPress={() => openModal(false)} />
+                      <Text>{responseText}</Text>
+                      <Fragment>
+                        <Pressable onPress={() => _descriptorScreen(true)}>
+                          <Text heading="h3" color={AppColors.orange}>
+                            Manage Descriptors {'->'}
+                          </Text>
+                        </Pressable>
+                      </Fragment>
+                    </Fragment>
+                  )}
+                </Fragment>
+              </Layout>
+              <View style={styles.bottomContainer}>
+                <Text style={styles.bottomText}>Your wallet, your coins {'\n'} 100% open-source & open-design</Text>
               </View>
-            </View>
-          </Modal>
-          {loading && <Loader />}
+
+              <Modal
+                transparent={true}
+                visible={seedModal}
+                onRequestClose={() => {
+                  _seedModal(false);
+                }}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text>{isWalletModal ? 'Enter your seed OR descriptor!!' : 'Enter your seed phrase!!'}</Text>
+                    {/* {isWalletModal && (
+                      <View style={{flexDirection: 'row', marginVertical: 5}}>
+                        <BouncyCheckbox isChecked={isDescriptor} onPress={newValue => _isDescriptor(newValue)} />
+                        <Text>Init with descriptor ?</Text>
+                      </View>
+                    )} */}
+                    <TextInput
+                      style={styles.modalInput}
+                      multiline
+                      value={mnemonic}
+                      onChangeText={_mnemonic}
+                      textAlignVertical="top"
+                    />
+                    <Pressable
+                      style={styles.modalBtn}
+                      onPress={() => {
+                        _seedModal(false);
+                        if (isWalletModal) initWallet();
+                        else getXprv();
+                      }}>
+                      <Text color={AppColors.white}>{isWalletModal ? 'Init' : 'Info'}</Text>
+                    </Pressable>
+                    <Pressable
+                      style={{...styles.modalBtn, backgroundColor: AppColors.black}}
+                      onPress={() => _seedModal(false)}>
+                      <Text color={AppColors.white}>Cancel</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </Modal>
+              {loading && <Loader />}
+            </Fragment>
+          )}
+          {walletExists && walletUnlocked && <MainNavigator />}
         </Fragment>
       )}
-
-      {walletExists && walletUnlocked && <MainNavigator />}
     </Fragment>
   );
 };
 
-export default connect((state: any) => ({...state.reducer}), {unlockWallet, createWallet, newWallet})(Login);
+export default connect((state: any) => ({...state.reducer, ...state.counterReducer}), {unlockWallet, createWallet})(
+  Login,
+);
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   bottomContainer: {marginVertical: 50, alignItems: 'center'},
   bottomText: {textAlign: 'center', color: AppColors.lightBlack},
   centeredView: {
