@@ -1955,9 +1955,9 @@ aws-sign2@~0.7.0:
   integrity sha512-08kcGqnYf/YmjoRhfxyu+CLxBjUtHLXLXX/vUfx9l2LYzG3c1m61nrpyFUZI6zeS+Li/wWMMidD9KgrqtGq3mA==
 
 aws4@^1.8.0:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
-  integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.12.0.tgz#ce1c9d143389679e253b314241ea9aa5cec980d3"
+  integrity sha512-NmWvPnx0F1SfrQbYwOi7OeaNGokp9XhzNioJ/CSBs8Qa4vxug81mhJEAVZwxXuBmYB5KDRfMq/F3RR0BIU7sWg==
 
 babel-core@^7.0.0-bridge.0:
   version "7.0.0-bridge.0"
@@ -2137,11 +2137,10 @@ bcrypt-pbkdf@^1.0.0:
     tweetnacl "^0.14.3"
 
 "bdk-rn@file:./../bdk-rn":
-  version "1.0.0"
+  version "0.27.0"
   dependencies:
     "@synonymdev/result" "0.0.2"
     adm-zip "^0.5.9"
-    is_js "^0.9.0"
     request "^2.88.2"
 
 big-integer@1.6.x:
@@ -4053,11 +4052,6 @@ is-wsl@^2.2.0:
   dependencies:
     is-docker "^2.0.0"
 
-is_js@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/is_js/-/is_js-0.9.0.tgz#0ab94540502ba7afa24c856aa985561669e9c52d"
-  integrity sha512-8Y5EHSH+TonfUHX2g3pMJljdbGavg55q4jmHzghJCdqYDbdNROC8uw/YFQwIRCRqRJT1EY3pJefz+kglw+o7sg==
-
 isarray@1.0.0, isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
@@ -5878,6 +5872,11 @@ react-is@^17.0.1, react-is@^17.0.2:
   version "17.0.2"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
+
+react-native-bg-thread@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-bg-thread/-/react-native-bg-thread-1.2.0.tgz#371ce0824202c85ce9b549d00bae0ec2e00a825c"
+  integrity sha512-gKRDs8VmJsMjbTdwY25UFJrOflOjmNIXhkZSgx6+BMVGSuquNQ4DmkrkaX/oi1914Crp04jpo0cbG6YI2t5HZg==
 
 react-native-bouncy-checkbox@^2.1.10:
   version "2.1.10"
