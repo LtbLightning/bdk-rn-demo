@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {AppColors, fontFamily, fontSizes} from '../styles/things';
 
-export const Text = ({children, style, ...props}) => {
+export const Text = ({children, style, ...props}: any) => {
   const {heading, color} = props;
   let internalStyle = {...styles.text};
   internalStyle.color = color;

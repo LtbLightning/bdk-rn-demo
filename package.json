@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "ios": "react-native run-ios --simulator='iPhone 14'",
+    "ios": "react-native run-ios --simulator='iPhone 15'",
     "start": "react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
@@ -17,7 +17,7 @@
     "@reduxjs/toolkit": "^1.9.1",
     "@types/redux": "^3.6.0",
     "@types/redux-actions": "^2.6.2",
-    "bdk-rn": "file:./../bdk-rn",
+    "bdk-rn": "file:./../bdk-rn/",
     "react": "17.0.2",
     "react-native": "0.67.3",
     "react-native-bg-thread": "^1.2.0",

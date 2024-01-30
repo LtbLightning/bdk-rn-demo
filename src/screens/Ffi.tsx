@@ -21,8 +21,6 @@ import React, {Fragment, useState} from 'react';
 import {SafeAreaView, ScrollView, View} from 'react-native';
 
 import Button from '../elements/Button';
-import Loader from '../elements/Loader';
-import RnBgTask from 'react-native-bg-thread';
 import {Text} from '../elements/Text';
 
 let xprvWallet =
@@ -39,7 +37,7 @@ let publicKey =
 let psbtString =
   'cHNidP8BAJoBAAAAAivIGwj79VJdDEMC6DTEBFWNRXh8i63O5Bj2ul/ckLSiAAAAAAD+////q/fYDAwa/ovXiOHXMMJWBzSSppAfXu8xVBWr97kc60kAAAAAAP7///8CCwUAAAAAAAAWABTiG3occFHBPEfIFYEno1q+KemyBNwFAAAAAAAAFgAUJeosBE8pPYv+vWAJxdrAq2HPlb50ByUAAAEA3gEAAAAAAQG1SXpVEroudlm2vsvLISuSLWqp3SMiU8bE/zFmMfSlrAEAAAAA/v///wLcBQAAAAAAABYAFCXqLARPKT2L/r1gCcXawKthz5W+kRAAAAAAAAAWABRIuasG/iTpawzZOHBRQUPdiAgtjwJHMEQCICkgZhWePD/RuE7V87/VcxX6PIv9LPg8+K6O42bX49usAiBe+ohVk1/abwUqmeqYuSM8x/e6sDrnZB1rD6GFdfm9iQEhApqPApANDfpFbG9N/WKaIz7W/c4Mf/7J8Zw2Usaj0G/InfEkAAEBH9wFAAAAAAAAFgAUJeosBE8pPYv+vWAJxdrAq2HPlb4iBgKn69zak6elBqiAOr/Z//pXXXHCW9JlHB6Nh9ccRCENABgJwK/eVAAAgAEAAIAAAACAAAAAAAcAAAAAAQD9cgEBAAAAAAECovbyC3Cz7gh5c5NeEl+NmyrVHkJ1d2rhU7Uh+DmS7NkBAAAAAP7///+SPhXvmO5lpEkSYDX3pXJX4UQxOwl3kr/j1zniiE3ZngEAAAAA/v///wLcBQAAAAAAABYAFCXqLARPKT2L/r1gCcXawKthz5W+sBoAAAAAAAAWABRAhHNCgth+tfSl0MjNpNs3O47FEgJHMEQCIHl0XcCSCH7JKLwvO32VdRO0J9W0V/IL3RaQ0Vp4ac3WAiBW5cHlrtP+mxBDJ+wMj8DCjptEnO9zxDw9heSw6CL7GwEhAqfr3NqTp6UGqIA6v9n/+lddccJb0mUcHo2H1xxEIQ0AAkcwRAIgUzTkO+PIbFWFVbZRl6ygi7yt/hCYEmVijPrJFr1E458CIAbTRLNvI8lsnDhcoze8mHZTkrAhfQQxexiy4AVxPYvJASEDNiD45tgRtvrlY6QCHTSPq/yyeARojSMzPVWTgO7tHite+SQAAQEf3AUAAAAAAAAWABQl6iwETyk9i/69YAnF2sCrYc+VviIGAqfr3NqTp6UGqIA6v9n/+lddccJb0mUcHo2H1xxEIQ0AGAnAr95UAACAAQAAgAAAAIAAAAAABwAAAAAiAgI2ReskgqkBRuwxJXtQ26XViRJaolnh8310DqkZHcZkzRgJwK/eVAAAgAEAAIAAAACAAAAAAAkAAAAAIgICp+vc2pOnpQaogDq/2f/6V11xwlvSZRwejYfXHEQhDQAYCcCv3lQAAIABAACAAAAAgAAAAAAHAAAAAA==';
 
-let networkString = Network.Testnet;
+let networkString = Network.Regtest;
 
 let signOptions = new SignOptions(false, false, 152, false, false, false, false, false);
 
@@ -70,6 +68,7 @@ const Ffi = () => {
       _seed(fromWordCount.asString());
       _loading(false);
     } catch (err) {
+      console.log('ERROR flow', err);
       _loading(false);
     }
   };
@@ -137,7 +136,7 @@ const Ffi = () => {
 
       /** =============== RPC CONFIG =============== */
       // let config: BlockchainRpcConfig = {
-      //   url: 'http://192.168.8.100:18443',
+      //   url: 'http://192.168.8.102:18443',
       //   network: networkString,
       //   walletName: 'w1',
       //   authUserPass: {username: 'polaruser', password: 'polarpass'},
@@ -221,18 +220,19 @@ const Ffi = () => {
   };
 
   const sync = () => {
-    console.log('Sync UI block testing');
-    RnBgTask.runInBackground(() => {
+    try {
+      console.log('Sync UI block testing');
       let start = Date.now();
       wallet?.sync(blockchain).then(e => {
         console.log('Sync Completed', e);
         let timeTaken = Date.now() - start;
         console.log('Total time taken : ' + timeTaken + ' milliseconds');
       });
-    });
-    console.log('===========Done==========');
-
-    getBalance();
+      console.log('===========Done==========');
+    } catch (e) {
+      console.log('Sync error', e);
+    }
+    // getBalance();
 
     // console.log('Get Balance called');
     // wallet?.getBalance().then(e => console.log('Balance Completed', e));
@@ -260,12 +260,12 @@ const Ffi = () => {
 
   const getAddress = async () => {
     console.log('Address called');
-    let addr = await wallet?.getAddress(AddressIndex.New);
-    console.log('External Address::', addr);
+    let addr = await wallet?.getAddress(AddressIndex.LastUnused);
+    console.log('External Address::', await addr?.address.asString());
 
     const script = await addr?.address?.scriptPubKey();
 
-    console.log('Iternal Address::', await wallet?.getInternalAddress(AddressIndex.New));
+    // console.log('Iternal Address::', await wallet?.getInternalAddress(AddressIndex.New));
 
     console.log('Is wallet mine::', await wallet?.isMine(script));
   };
@@ -354,11 +354,13 @@ const Ffi = () => {
     const bip44 = await new Descriptor().newBip44(secretKey, KeychainKind.External, networkString);
     const bip49 = await new Descriptor().newBip49(secretKey, KeychainKind.External, networkString);
     const bip84 = await new Descriptor().newBip84(secretKey, KeychainKind.External, networkString);
+    const bip86 = await new Descriptor().newBip86(secretKey, KeychainKind.External, networkString);
 
-    console.log('Default---->', await descObject.asString(), await descObject.asStringPrivate());
-    console.log('44--->', bip44, await bip44.asString(), await bip44.asStringPrivate());
-    console.log('49--->', bip49, await bip49.asString(), await bip49.asStringPrivate());
-    console.log('84--->', bip84, await bip84.asString(), await bip84.asStringPrivate());
+    // console.log('Default---->', await descObject.asString(), await descObject.asStringPrivate());
+    // console.log('44--->', bip44, await bip44.asString(), await bip44.asStringPrivate());
+    // console.log('49--->', bip49, await bip49.asString(), await bip49.asStringPrivate());
+    // console.log('84--->', bip84, await bip84.asString(), await bip84.asStringPrivate());
+    console.log('86--->', bip86, await bip86.asString(), await bip86.asStringPrivate());
   };
 
   const publicDescriptors = async () => {
@@ -369,13 +371,15 @@ const Ffi = () => {
       const pubKey = await secretKey.asPublic();
 
       console.log('<====== Public descriptor templates=========>');
-      const bip44 = await new Descriptor().newBip44Public(pubKey, fingerprint, KeychainKind.External, networkString);
-      const bip49 = await new Descriptor().newBip49Public(pubKey, fingerprint, KeychainKind.External, networkString);
-      const bip84 = await new Descriptor().newBip84Public(pubKey, fingerprint, KeychainKind.External, networkString);
+      // const bip44 = await new Descriptor().newBip44Public(pubKey, fingerprint, KeychainKind.External, networkString);
+      // const bip49 = await new Descriptor().newBip49Public(pubKey, fingerprint, KeychainKind.External, networkString);
+      // const bip84 = await new Descriptor().newBip84Public(pubKey, fingerprint, KeychainKind.External, networkString);
+      const bip86 = await new Descriptor().newBip86Public(pubKey, fingerprint, KeychainKind.External, networkString);
 
-      console.log('44--->', bip44, await bip44.asString(), await bip44.asStringPrivate());
-      console.log('49--->', bip49, await bip49.asString(), await bip49.asStringPrivate());
-      console.log('84--->', bip84, await bip84.asString(), await bip84.asStringPrivate());
+      // console.log('44--->', bip44, await bip44.asString(), await bip44.asStringPrivate());
+      // console.log('49--->', bip49, await bip49.asString(), await bip49.asStringPrivate());
+      // console.log('84--->', bip84, await bip84.asString(), await bip84.asStringPrivate());
+      console.log('86--->', bip86, await bip86.asString(), await bip86.asStringPrivate());
     } catch (e) {
       console.log('Error while creating public keys', e);
     }
@@ -435,9 +439,9 @@ const Ffi = () => {
     <SafeAreaView>
       <ScrollView contentContainerStyle={{alignItems: 'center', justifyContent: 'center'}}>
         {/* {loading && <Loader />} */}
-        {/* <Button transparent title="Secret Descriptor" onPress={descriptors} />
+        <Button transparent title="Secret Descriptor" onPress={descriptors} />
         <Button transparent title="Public Descriptor" onPress={publicDescriptors} />
-        <Button transparent title="PSBT" onPress={psbtMethods} /> */}
+        <Button transparent title="PSBT" onPress={psbtMethods} />
         <View>
           <Button transparent title="PSBT" onPress={() => psbtMethods()} />
           <Button transparent title="Init blockchain" onPress={() => initBlockChain()} />
