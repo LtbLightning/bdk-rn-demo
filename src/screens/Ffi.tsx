@@ -1,28 +1,28 @@
 /* eslint-disable curly */
 import {
+  Address,
+  Blockchain,
+  BumpFeeTxBuilder,
+  DatabaseConfig,
+  DerivationPath,
+  Descriptor,
+  DescriptorPublicKey,
   DescriptorSecretKey,
   Mnemonic,
-  DescriptorPublicKey,
-  DerivationPath,
-  Blockchain,
-  Wallet,
-  DatabaseConfig,
-  Address,
-  TxBuilder,
-  Descriptor,
   PartiallySignedTransaction,
-  BumpFeeTxBuilder,
   Transaction,
+  TxBuilder,
+  Wallet,
 } from 'bdk-rn';
 import {AddressIndex, BlockChainNames, BlockchainEsploraConfig, KeychainKind, WordCount} from 'bdk-rn/lib/lib/enums';
-import {OutPoint, ScriptAmount} from 'bdk-rn/src/classes/Bindings';
-import {BlockchainElectrumConfig, Network, BlockchainRpcConfig} from 'bdk-rn/src/lib/enums';
+import {BlockchainElectrumConfig, BlockchainRpcConfig, Network} from 'bdk-rn/src/lib/enums';
+import {OutPoint, ScriptAmount, SignOptions} from 'bdk-rn/src/classes/Bindings';
 import React, {Fragment, useState} from 'react';
 import {SafeAreaView, ScrollView, View} from 'react-native';
-import RnBgTask from 'react-native-bg-thread';
 
 import Button from '../elements/Button';
 import Loader from '../elements/Loader';
+import RnBgTask from 'react-native-bg-thread';
 import {Text} from '../elements/Text';
 
 let xprvWallet =
@@ -40,6 +40,9 @@ let psbtString =
   'cHNidP8BAJoBAAAAAivIGwj79VJdDEMC6DTEBFWNRXh8i63O5Bj2ul/ckLSiAAAAAAD+////q/fYDAwa/ovXiOHXMMJWBzSSppAfXu8xVBWr97kc60kAAAAAAP7///8CCwUAAAAAAAAWABTiG3occFHBPEfIFYEno1q+KemyBNwFAAAAAAAAFgAUJeosBE8pPYv+vWAJxdrAq2HPlb50ByUAAAEA3gEAAAAAAQG1SXpVEroudlm2vsvLISuSLWqp3SMiU8bE/zFmMfSlrAEAAAAA/v///wLcBQAAAAAAABYAFCXqLARPKT2L/r1gCcXawKthz5W+kRAAAAAAAAAWABRIuasG/iTpawzZOHBRQUPdiAgtjwJHMEQCICkgZhWePD/RuE7V87/VcxX6PIv9LPg8+K6O42bX49usAiBe+ohVk1/abwUqmeqYuSM8x/e6sDrnZB1rD6GFdfm9iQEhApqPApANDfpFbG9N/WKaIz7W/c4Mf/7J8Zw2Usaj0G/InfEkAAEBH9wFAAAAAAAAFgAUJeosBE8pPYv+vWAJxdrAq2HPlb4iBgKn69zak6elBqiAOr/Z//pXXXHCW9JlHB6Nh9ccRCENABgJwK/eVAAAgAEAAIAAAACAAAAAAAcAAAAAAQD9cgEBAAAAAAECovbyC3Cz7gh5c5NeEl+NmyrVHkJ1d2rhU7Uh+DmS7NkBAAAAAP7///+SPhXvmO5lpEkSYDX3pXJX4UQxOwl3kr/j1zniiE3ZngEAAAAA/v///wLcBQAAAAAAABYAFCXqLARPKT2L/r1gCcXawKthz5W+sBoAAAAAAAAWABRAhHNCgth+tfSl0MjNpNs3O47FEgJHMEQCIHl0XcCSCH7JKLwvO32VdRO0J9W0V/IL3RaQ0Vp4ac3WAiBW5cHlrtP+mxBDJ+wMj8DCjptEnO9zxDw9heSw6CL7GwEhAqfr3NqTp6UGqIA6v9n/+lddccJb0mUcHo2H1xxEIQ0AAkcwRAIgUzTkO+PIbFWFVbZRl6ygi7yt/hCYEmVijPrJFr1E458CIAbTRLNvI8lsnDhcoze8mHZTkrAhfQQxexiy4AVxPYvJASEDNiD45tgRtvrlY6QCHTSPq/yyeARojSMzPVWTgO7tHite+SQAAQEf3AUAAAAAAAAWABQl6iwETyk9i/69YAnF2sCrYc+VviIGAqfr3NqTp6UGqIA6v9n/+lddccJb0mUcHo2H1xxEIQ0AGAnAr95UAACAAQAAgAAAAIAAAAAABwAAAAAiAgI2ReskgqkBRuwxJXtQ26XViRJaolnh8310DqkZHcZkzRgJwK/eVAAAgAEAAIAAAACAAAAAAAkAAAAAIgICp+vc2pOnpQaogDq/2f/6V11xwlvSZRwejYfXHEQhDQAYCcCv3lQAAIABAACAAAAAgAAAAAAHAAAAAA==';
 
 let networkString = Network.Testnet;
+
+let signOptions = new SignOptions(false, false, 152, false, false, false, false, false);
+
 const Ffi = () => {
   const [loading, _loading] = useState(false);
   const [response, _response] = useState<any>();
@@ -146,32 +149,31 @@ const Ffi = () => {
       /** =============== RPC CONFIG =============== */
 
       /** =============== Electrum CONFIG =============== */
-      // let config: BlockchainElectrumConfig = {
-      //   url: 'ssl://electrum.blockstream.info:60002',
-      //   sock5: null,
-      //   retry: 5,
-      //   timeout: 5,
-      //   stopGap: 5,
-      //   validateDomain: false,
-      // };
-      // setBlockchain(await blockchainInstance.create(config));
-      // setBlockchain1(await blockchainInstance.create(config));
+      let config: BlockchainElectrumConfig = {
+        url: 'ssl://electrum.blockstream.info:60002',
+        sock5: null,
+        retry: 5,
+        timeout: 5,
+        stopGap: 500,
+        validateDomain: false,
+      };
+      setBlockchain(await blockchainInstance.create(config));
+      setBlockchain1(await blockchainInstance.create(config));
       /** =============== Electrum CONFIG =============== */
 
       /** =============== Esplora CONFIG =============== */
-      let config: BlockchainEsploraConfig = {
-        baseUrl: 'https://blockstream.info/testnet/api',
-        proxy: null,
-        concurrency: 5,
-        stopGap: 5,
-        timeout: 5,
-      };
+      // let config: BlockchainEsploraConfig = {
+      //   baseUrl: 'https://blockstream.info/testnet/api',
+      //   proxy: null,
+      //   concurrency: 5,
+      //   stopGap: 5,
+      //   timeout: 5,
+      // };
 
-      setBlockchain(await blockchainInstance.create(config, BlockChainNames.Esplora));
-      setBlockchain1(await blockchainInstance.create(config, BlockChainNames.Esplora));
+      // setBlockchain(await blockchainInstance.create(config, BlockChainNames.Esplora));
+      // setBlockchain1(await blockchainInstance.create(config, BlockChainNames.Esplora));
       /** =============== Esplora CONFIG =============== */
 
-      console.log('Cofig', config);
       const height = await blockchain.getHeight();
       const hash = await blockchain.getBlockHash(height);
       _response(`Height: ${height},\n Hash: ${hash}`);
@@ -256,9 +258,16 @@ const Ffi = () => {
   //   console.log('Total time taken : ' + timeTaken + ' milliseconds');
   // };
 
-  const getAddress = () => {
+  const getAddress = async () => {
     console.log('Address called');
-    wallet?.getAddress(AddressIndex.New).then(e => console.log('Address Response', e));
+    let addr = await wallet?.getAddress(AddressIndex.New);
+    console.log('External Address::', addr);
+
+    const script = await addr?.address?.scriptPubKey();
+
+    console.log('Iternal Address::', await wallet?.getInternalAddress(AddressIndex.New));
+
+    console.log('Is wallet mine::', await wallet?.isMine(script));
   };
 
   const unspents = async (one = true) => {
@@ -274,9 +283,9 @@ const Ffi = () => {
   const transactions = async (one = true) => {
     _loading(true);
     if (one) {
-      console.log(await wallet?.listTransactions());
+      console.log(await wallet?.listTransactions(false));
     } else {
-      console.log(await wallet1?.listTransactions());
+      console.log(await wallet1?.listTransactions(true));
     }
     _loading(false);
   };
@@ -333,6 +342,7 @@ const Ffi = () => {
     const scriptAmounts: Array<ScriptAmount> = [new ScriptAmount(script, amount), new ScriptAmount(script1, amount)];
     await txBuilder.setRecipients(scriptAmounts);
 
+    console.log(await script.toBytes());
     console.log('No Error occured', txBuilder);
   };
 
@@ -377,11 +387,26 @@ const Ffi = () => {
     let byteArray = await transactionObject.serialize();
 
     let txObject = await new Transaction().create(byteArray);
+    console.log('====================PSBT===================');
+    // console.log('TxId: ', await psbt.txid());
+    // console.log('Fee Amount: ', await psbt.feeAmount());
+    // console.log('Fee Rate: ', await psbt.feeRate());
+    // console.log('JSON serialize: ', await psbt.jsonSerialize());
+
+    console.log('====================TRANSACTION===================');
     console.log('TXObject', txObject);
-    console.log('Serialize: ', await txObject.serialize());
-    console.log('TxId: ', await psbt.txid());
-    console.log('Fee Amount: ', await psbt.feeAmount());
-    console.log('Fee Rate: ', await psbt.feeRate());
+    // console.log('Serialize: ', await txObject.serialize());
+    console.log('txid: ', await txObject.txid());
+    console.log('weight: ', await txObject.weight());
+    console.log('size: ', await txObject.size());
+    console.log('vsize: ', await txObject.vsize());
+    console.log('isCoinBase: ', await txObject.isCoinBase());
+    console.log('isExplicitlyRbf: ', await txObject.isExplicitlyRbf());
+    console.log('isLockTimeEnabled: ', await txObject.isLockTimeEnabled());
+    console.log('version: ', await txObject.version());
+    console.log('lockTime: ', await txObject.lockTime());
+    console.log('input: ', await txObject.input());
+    console.log('output: ', await txObject.output());
   };
 
   const bumpTx = async (tid = 'da6e62280471c504dbf92baf78af5bfdde3e6d457ea55cf43c490f091740c898') => {
@@ -392,6 +417,18 @@ const Ffi = () => {
     console.log('RBF Sequence::', await bumpTxBuilder.enableRbfWithSequence(15));
     console.log('Finish::', await bumpTxBuilder.finish(wallet));
     _response('Send and Bump Finish');
+  };
+
+  const addressExtras = async () => {
+    let addr = await new Address().create('tb1qccmtnhczmv3a6k4mtq8twm7ltj3e32qsntmamv');
+    let script = await addr?.scriptPubKey();
+
+    let address = await new Address().fromScript(script, Network.Testnet);
+    console.log('From Script', address);
+    console.log(await address?.payload());
+    console.log(await address?.network());
+    console.log(await address?.toQrUri());
+    console.log(await address?.asString());
   };
 
   return (
@@ -417,6 +454,7 @@ const Ffi = () => {
               <Button transparent title="List unspents" onPress={() => unspents()} />
               <Button transparent title="List transactions" onPress={() => transactions()} />
               <Button transparent title="Send" onPress={() => sendBit()} />
+              <Button transparent title="Address Extras" onPress={() => addressExtras()} />
             </Fragment>
           )}
           <Button transparent title="TxBuilders" onPress={() => extraTxMethods()} />

@@ -2137,7 +2137,7 @@ bcrypt-pbkdf@^1.0.0:
     tweetnacl "^0.14.3"
 
 "bdk-rn@file:./../bdk-rn":
-  version "0.27.0"
+  version "0.29.0"
   dependencies:
     "@synonymdev/result" "0.0.2"
     adm-zip "^0.5.9"
