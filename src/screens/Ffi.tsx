@@ -29,7 +29,7 @@ let xprvWallet =
 let xprvWallet1 =
   "tprv8ZgxMBicQKsPd3G66kPkZEuJZgUK9QXJRYCwnCtYLJjEZmw8xFjCxGoyx533AL83XFcSQeuVmVeJbZai5RTBxDp71Abd2FPSyQumRL79BKw/84'/1'/0'/0/*";
 
-let mnemonicString = 'cream ecology sniff amazing awful ocean gaze can peanut abandon emotion affair';
+let mnemonicString = 'awkward fox lawn senior flavor cook genuine cake endorse rare walk this';
 
 let publicKey =
   'tpubD6NzVbkrYhZ4X6hhuGPZoxCNUmTK2Wbh1X6sWFVNW5xVK1e7j4cxa7gdqPfWZ9AKeiaYYjhVi75t2gbubG3oPNpwpAoMtW9ki4Aj7itJMhm/*';
@@ -135,32 +135,32 @@ const Ffi = () => {
       _loading(true);
 
       /** =============== RPC CONFIG =============== */
-      // let config: BlockchainRpcConfig = {
-      //   url: 'http://192.168.8.102:18443',
-      //   network: networkString,
-      //   walletName: 'w1',
-      //   authUserPass: {username: 'polaruser', password: 'polarpass'},
-      //   syncParams: {startScriptCount: 15, startTime: 15, forceStartTime: true, pollRateSec: 120},
-      // };
+      let config: BlockchainRpcConfig = {
+        url: 'http://127.0.0.1:18443',
+        network: networkString,
+        walletName: 'w1',
+        authUserPass: {username: 'polaruser', password: 'polarpass'},
+        syncParams: {startScriptCount: 15, startTime: 15, forceStartTime: true, pollRateSec: 120},
+      };
 
-      // setBlockchain(await blockchainInstance.create(config, BlockChainNames.Rpc));
-      // setBlockchain1(await blockchainInstance.create(config, BlockChainNames.Rpc));
+      setBlockchain(await blockchainInstance.create(config, BlockChainNames.Rpc));
+      setBlockchain1(await blockchainInstance.create(config, BlockChainNames.Rpc));
       /** =============== RPC CONFIG =============== */
 
       /** =============== Electrum CONFIG =============== */
-      let config: BlockchainElectrumConfig = {
-        url: 'ssl://electrum.blockstream.info:60002',
-        sock5: null,
-        retry: 5,
-        timeout: 5,
-        stopGap: 500,
-        validateDomain: false,
-      };
-      setBlockchain(await blockchainInstance.create(config));
-      setBlockchain1(await blockchainInstance.create(config));
+      // let config: BlockchainElectrumConfig = {
+      //   url: 'ssl://electrum.blockstream.info:60002',
+      //   sock5: null,
+      //   retry: 5,
+      //   timeout: 5,
+      //   stopGap: 500,
+      //   validateDomain: false,
+      // };
+      // setBlockchain(await blockchainInstance.create(config));
+      // setBlockchain1(await blockchainInstance.create(config));
       /** =============== Electrum CONFIG =============== */
 
-      /** =============== Esplora CONFIG =============== */
+      // /** =============== Esplora CONFIG =============== */
       // let config: BlockchainEsploraConfig = {
       //   baseUrl: 'https://blockstream.info/testnet/api',
       //   proxy: null,
@@ -171,7 +171,7 @@ const Ffi = () => {
 
       // setBlockchain(await blockchainInstance.create(config, BlockChainNames.Esplora));
       // setBlockchain1(await blockchainInstance.create(config, BlockChainNames.Esplora));
-      /** =============== Esplora CONFIG =============== */
+      // /** =============== Esplora CONFIG =============== */
 
       const height = await blockchain.getHeight();
       const hash = await blockchain.getBlockHash(height);
@@ -202,7 +202,7 @@ const Ffi = () => {
       setWallet(w);
       _loading(false);
     } catch (e) {
-      console.log('Blockchain error', e);
+      console.log('Wallet Init error', e);
       _loading(false);
     }
   };
@@ -260,12 +260,13 @@ const Ffi = () => {
 
   const getAddress = async () => {
     console.log('Address called');
-    let addr = await wallet?.getAddress(AddressIndex.LastUnused);
+    let addr = await wallet?.getAddress(AddressIndex.New);
     console.log('External Address::', await addr?.address.asString());
 
     const script = await addr?.address?.scriptPubKey();
+    let internalAddress = await wallet?.getInternalAddress(AddressIndex.New);
 
-    // console.log('Iternal Address::', await wallet?.getInternalAddress(AddressIndex.New));
+    console.log('Internal Address::', await internalAddress?.address.asString());
 
     console.log('Is wallet mine::', await wallet?.isMine(script));
   };
@@ -298,7 +299,7 @@ const Ffi = () => {
     let psbt;
 
     if (one) {
-      let address = await new Address().create(addressHash);
+      let address = await new Address().create(addressHash, networkString);
       let script = await address.scriptPubKey();
       let txBuilder = await new TxBuilder().create();
       await txBuilder.addRecipient(script, 20000);
@@ -322,8 +323,10 @@ const Ffi = () => {
   const extraTxMethods = async () => {
     let txBuilder = await new TxBuilder().create();
     let amount = 999;
-    let script = await (await new Address().create(addressHash)).scriptPubKey();
-    let script1 = await (await new Address().create('tb1qvdgr0mhn354zzc5q6ex0p6stkuj4qcjl640ju2')).scriptPubKey();
+    let script = await (await new Address().create(addressHash, networkString)).scriptPubKey();
+    let script1 = await (
+      await new Address().create('tb1qvdgr0mhn354zzc5q6ex0p6stkuj4qcjl640ju2', networkString)
+    ).scriptPubKey();
     await txBuilder.addUnspendable(new OutPoint(txId, 750));
     await txBuilder.addUtxo(new OutPoint(txId, 750));
     await txBuilder.addUtxos([new OutPoint(txId, 750)]);
@@ -414,9 +417,11 @@ const Ffi = () => {
   };
 
   const bumpTx = async (tid = 'da6e62280471c504dbf92baf78af5bfdde3e6d457ea55cf43c490f091740c898') => {
+    let addr = await new Address().create('tb1qccmtnhczmv3a6k4mtq8twm7ltj3e32qsntmamv', networkString);
+    let script = await addr?.scriptPubKey();
     const bumpTxBuilder = await new BumpFeeTxBuilder().create(tid, 15);
     console.log('Bump tx::', bumpTxBuilder);
-    console.log('Shrink::', await bumpTxBuilder.allowShrinking(addressHash));
+    console.log('Shrink::', await bumpTxBuilder.allowShrinking(script));
     console.log('RBF::', await bumpTxBuilder.enableRbf());
     console.log('RBF Sequence::', await bumpTxBuilder.enableRbfWithSequence(15));
     console.log('Finish::', await bumpTxBuilder.finish(wallet));
@@ -424,15 +429,16 @@ const Ffi = () => {
   };
 
   const addressExtras = async () => {
-    let addr = await new Address().create('tb1qccmtnhczmv3a6k4mtq8twm7ltj3e32qsntmamv');
+    let addr = await new Address().create('tb1qccmtnhczmv3a6k4mtq8twm7ltj3e32qsntmamv', networkString);
     let script = await addr?.scriptPubKey();
 
     let address = await new Address().fromScript(script, Network.Testnet);
-    console.log('From Script', address);
+    // console.log('From Script', address);
     console.log(await address?.payload());
     console.log(await address?.network());
     console.log(await address?.toQrUri());
     console.log(await address?.asString());
+    console.log(await address?.isValidForNetwork(Network.Testnet));
   };
 
   return (

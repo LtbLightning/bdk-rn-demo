@@ -8,7 +8,7 @@ export const resetWallet = createAction('RESET_WALLET');
 export const logout = createAction('LOGOUT_WALLET');
 export const GEN_SEED_SUCCESS = 'GEN_SEED_SUCCESS';
 
-export const genSeed = () => dispatch => {
+export const genSeed = () => (dispatch: any) => {
   BdkRn.generateMnemonic({length: 12}).then((response: any) => {
     dispatch({type: GEN_SEED_SUCCESS, data: response.data});
   });
